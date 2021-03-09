@@ -8,6 +8,8 @@ use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\VendorRequest;
+use App\Http\Resources\DishResource;
+use App\Dish;
 
 class VendorController extends Controller
 {
@@ -132,5 +134,18 @@ class VendorController extends Controller
         return response()->json([
             "message" => "Vendor deleted successfully"
         ]);
+    }
+
+    public function dishes($id)
+    {
+        $vendor = Vendor::find($id);
+        
+        if(!$vendor) return response()->json([
+            "status" => "error",
+            "code" => 404,
+            "message" => "Data not found"
+        ], 404);
+        
+        return DishResource::collection(Dish::where('vendor_id', $id)->get());
     }
 }
