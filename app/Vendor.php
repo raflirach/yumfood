@@ -12,4 +12,9 @@ class Vendor extends Model
     {
         return $this->morphToMany('App\Tag', 'taggable');
     }
+
+    public function dishes()
+    {
+        return $this->hasMany('App\Dish');
+    }
 }
