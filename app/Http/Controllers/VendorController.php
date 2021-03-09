@@ -16,9 +16,18 @@ class VendorController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return VendorResource::collection(Vendor::orderBy('id')->paginate());
+        $filter = $request->query('tags');
+        if($filter){
+            return VendorResource::collection(Vendor::whereHas('tags', function($query) use ($filter) {
+                $query->whereIn('name', $filter);
+            })
+                ->orderBy('id')
+                ->paginate());
+        } else {
+            return VendorResource::collection(Vendor::orderBy('id')->paginate());
+        }
     }
 
     /**
