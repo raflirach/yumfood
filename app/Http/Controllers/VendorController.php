@@ -131,6 +131,7 @@ class VendorController extends Controller
         ], 404);
 
         Vendor::destroy($id);
+        $vendor->tags()->detach();
         return response()->json([
             "message" => "Vendor deleted successfully"
         ]);
