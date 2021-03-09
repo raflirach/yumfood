@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\VendorResource;
 use App\Vendor;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\VendorRequest;
 
 class VendorController extends Controller
 {
@@ -16,7 +18,7 @@ class VendorController extends Controller
      */
     public function index()
     {
-        return VendorResource::collection(Vendor::paginate());
+        return VendorResource::collection(Vendor::orderBy('id')->paginate());
     }
 
     /**
@@ -25,9 +27,25 @@ class VendorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(VendorRequest $request)
     {
-        //
+        $name = $request->name;
+        $logo = $request->logo;
+        $tags = $request->tags;
+
+        $vendor = Vendor::create([
+            "name" => $name,
+            "logo" => $logo
+        ]);
+        if($vendor) {
+            foreach ($tags as $tag) {
+                Tag::firstOrCreate(['name' => $tag]);
+            }
+    
+            $newTags = Tag::whereIn('name', $tags)->get()->pluck('id');
+            $vendor->tags()->sync($newTags);
+        }
+        return new VendorResource($vendor);
     }
 
     /**
@@ -38,7 +56,15 @@ class VendorController extends Controller
      */
     public function show($id)
     {
-        //
+        $vendor = Vendor::find($id);
+
+        if(!$vendor) return response()->json([
+            "status" => "error",
+            "code" => 404,
+            "message" => "Data not found"
+        ], 404);
+
+        return new VendorResource($vendor);
     }
 
     /**
@@ -48,9 +74,33 @@ class VendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(VendorRequest $request, $id)
     {
-        //
+        $vendor = Vendor::find($id);
+
+        $name = $request->name;
+        $logo = $request->logo;
+        $tags = $request->tags;
+        
+        if(!$vendor) return response()->json([
+            "status" => "error",
+            "code" => 404,
+            "message" => "Data not found"
+        ], 404);
+
+        $vendor->fill([
+            "name" => $name,
+            "logo" => $logo
+        ]);
+        if($vendor) {
+            foreach ($tags as $tag) {
+                Tag::firstOrCreate(['name' => $tag]);
+            }
+    
+            $newTags = Tag::whereIn('name', $tags)->get()->pluck('id');
+            $vendor->tags()->sync($newTags);
+        }
+        return new VendorResource($vendor);
     }
 
     /**
@@ -61,6 +111,17 @@ class VendorController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $vendor = Vendor::find($id);
+        
+        if(!$vendor) return response()->json([
+            "status" => "error",
+            "code" => 404,
+            "message" => "Data not found"
+        ], 404);
+
+        Vendor::destroy($id);
+        return response()->json([
+            "message" => "Vendor deleted successfully"
+        ]);
     }
 }
