@@ -12,4 +12,17 @@ class DishController extends Controller
     {
         return DishResource::collection(Dish::orderBy('id')->paginate());
     }
+
+    public function show($id)
+    {
+        $dish = Dish::find($id);
+
+        if(!$dish) return response()->json([
+            "status" => "error",
+            "code" => 404,
+            "message" => "Data not found"
+        ], 404);
+
+        return new DishResource($dish);
+    }
 }
