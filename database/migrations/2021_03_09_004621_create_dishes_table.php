@@ -17,6 +17,7 @@ class CreateDishesTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('vendor_id')->references('id')->on('vendors');
             $table->string('name');
+            $table->double('price', 15, 8);
             $table->timestamps();
         });
     }
