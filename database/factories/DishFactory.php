@@ -11,5 +11,6 @@ $factory->define(Dish::class, function (Faker $faker) {
     return [
         'name' => $faker->foodName(),
         'vendor_id' => $faker->numberBetween($min = 1, $max = 50),
+        'price' => $faker->numberBetween($min = 1, $max = 50),
     ];
 });
