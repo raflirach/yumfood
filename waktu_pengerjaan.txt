@@ -1,0 +1,5 @@
+1. CRUD Vendor + filter(± 7 jam)
+2. Retrieve dishes for the specific restaurant (± 1jam)
+3. Order list + create order (± 1 jam)
+
+detail : https://wakatime.com/@raflirach/projects/ftdrjkjloy?start=2021-03-06&end=2021-03-12
